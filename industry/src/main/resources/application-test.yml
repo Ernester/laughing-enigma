@@ -14,7 +14,21 @@ spring:
   host: 173.82.240.222
   port: 6379
 
- logging:
+
+swagger:
+  enabled: true
+  title: swagger
+  version: 1.0
+  description: 接口文档
+  base-path: /**
+  exclude-path: /error,/login,/home
+  contact:
+    name: zz
+    email: aa@11.com
+  ui-config:
+    doc-expansion: none
+
+logging:
    level:
     com-bj-industry: debug
 

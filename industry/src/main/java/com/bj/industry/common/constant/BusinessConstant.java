@@ -3,7 +3,7 @@ package com.bj.industry.common.constant;
 /**
  * @author fwd
  */
-public class BusunessConstant {
+public class BusinessConstant {
 
     /**
      * 成功
@@ -30,4 +30,13 @@ public class BusunessConstant {
      */
     public static final int  INTERNAL_SERVER_ERROR= 500 ;
 
+    /**
+     * 参数异常
+     */
+    public static final int PARAMETER_ERROR = 100 ;
+
+    /**
+     * 用户不存在
+     */
+    public static final int USER_NOT_EXIST =  101 ;
 }

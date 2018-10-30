@@ -1,12 +1,15 @@
 package com.bj.industry.service.impl;
 
+import com.bj.industry.common.exception.BaseExceptionCodes;
 import com.bj.industry.common.exception.BusinessException;
 import com.bj.industry.entity.Role;
 import com.bj.industry.entity.User;
 import com.bj.industry.repository.RoleRepository;
 import com.bj.industry.repository.UserRepository;
 import com.bj.industry.service.IUserService;
+import com.bj.industry.vo.UserInfoVO;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,7 @@ import java.util.List;
  * @author fwd
  */
 @Service
-public class UserServiceImpl implements IUserService,UserDetailsService {
+public class UserServiceImpl implements IUserService, UserDetailsService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -39,26 +42,19 @@ public class UserServiceImpl implements IUserService,UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Override
-    public User findUserByName(String name) throws BusinessException {
-        LOGGER.info("user find name:{}", name);
-        if (StringUtils.isBlank(name)){
-            throw new BusinessException("参数异常");
-        }
+    public UserInfoVO findUserByName(String name) throws BusinessException {
         User user = userRepository.findUserByName(name);
         if (user == null) {
-            return null;
+            throw new BusinessException(BaseExceptionCodes.USER_NOT_EXIST);
         }
-        List<Role> roles = roleRepository.findRoleByUserId(user.getId());
-
-        if(roles == null || roles.isEmpty()){
-            throw new DisabledException("无权限");
-        }
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getName())));
-        user.setAuthorityList(authorities);
-        return user;
+        UserInfoVO userInfoVO = new UserInfoVO();
+        modelMapper.map(user, userInfoVO);
+        return userInfoVO;
     }
 
     @Override

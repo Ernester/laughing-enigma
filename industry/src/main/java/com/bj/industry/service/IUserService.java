@@ -2,6 +2,7 @@ package com.bj.industry.service;
 
 import com.bj.industry.common.exception.BusinessException;
 import com.bj.industry.entity.User;
+import com.bj.industry.vo.UserInfoVO;
 
 public interface IUserService {
 
@@ -10,5 +11,6 @@ public interface IUserService {
      * @param name
      * @return
      */
-    User findUserByName(String name) throws BusinessException;
+    UserInfoVO findUserByName(String name) throws BusinessException;
+
 }

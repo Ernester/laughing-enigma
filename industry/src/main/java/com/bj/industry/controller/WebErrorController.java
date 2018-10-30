@@ -1,7 +1,7 @@
 package com.bj.industry.controller;
 
 import com.bj.industry.common.base.ResponseVO;
-import com.bj.industry.common.constant.BusunessConstant;
+import com.bj.industry.common.constant.BusinessConstant;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
@@ -26,6 +26,10 @@ public class WebErrorController implements ErrorController {
      */
     private ErrorAttributes errorAttributes;
 
+    public WebErrorController(ErrorAttributes errorAttributes) {
+        this.errorAttributes = errorAttributes;
+    }
+
     @Override
     public String getErrorPath() {
         return ERROR_PATH;
@@ -34,7 +38,7 @@ public class WebErrorController implements ErrorController {
     @RequestMapping(value = ERROR_PATH, produces = "text/html")
     public String errorHandler(HttpServletResponse response){
         int status = response.getStatus();
-        if (BusunessConstant.NOT_FOUND == status || BusunessConstant.BAD_REQUEST ==status || BusunessConstant.FORBIDDEN == status){
+        if (BusinessConstant.NOT_FOUND == status || BusinessConstant.BAD_REQUEST ==status || BusinessConstant.FORBIDDEN == status){
             return String.valueOf(status);
         }
         return "index";
@@ -48,7 +52,7 @@ public class WebErrorController implements ErrorController {
         WebRequest webRequest = new ServletWebRequest(request);
         Map<String,Object> attr = this.errorAttributes.getErrorAttributes(webRequest,false);
         if (attr == null) {
-            return ResponseVO.OfMessage(BusunessConstant.INTERNAL_SERVER_ERROR,request.getRemoteUser()+"|error");
+            return ResponseVO.OfMessage(BusinessConstant.INTERNAL_SERVER_ERROR,request.getRemoteUser()+"|error");
         }
         Integer status = (Integer)request.getAttribute("javax.servlet.error.status_code");
         if(status==null){

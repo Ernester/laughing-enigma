@@ -20,4 +20,7 @@ public class IndustryApplicationTests {
 		System.out.println(jedis.get("name"));
 	}
 
+	@Test
+	public void loadTest(){
+	}
 }
