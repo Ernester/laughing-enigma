@@ -23,6 +23,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name="user")
 public class User implements UserDetails{
 
+    private static final long serialVersionUID = -5613811931073494825L;
+
+    /**用户状态标识0：正常*/
+    public static final Integer STATUS_FORBIDDEN= 0;
+    /**用户状态标识1：禁用*/
+    public static final Integer STATUS_START= 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

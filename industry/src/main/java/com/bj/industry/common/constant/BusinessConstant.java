@@ -16,7 +16,7 @@ public class BusinessConstant {
     public static final int BAD_REQUEST = 400;
 
     /**
-     * 成功
+     * FORBIDDEN
      */
     public static final int FORBIDDEN = 403;
 

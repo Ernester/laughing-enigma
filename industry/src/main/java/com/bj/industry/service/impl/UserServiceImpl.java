@@ -1,5 +1,6 @@
 package com.bj.industry.service.impl;
 
+import com.bj.industry.common.base.PageVO;
 import com.bj.industry.common.exception.BaseExceptionCodes;
 import com.bj.industry.common.exception.BusinessException;
 import com.bj.industry.entity.Role;
@@ -13,6 +14,10 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,13 +54,38 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 
     @Override
     public UserInfoVO findUserByName(String name) throws BusinessException {
-        User user = userRepository.findUserByName(name);
-        if (user == null) {
-            throw new BusinessException(BaseExceptionCodes.USER_NOT_EXIST);
-        }
+        User user = this.getUser(name);
         UserInfoVO userInfoVO = new UserInfoVO();
         modelMapper.map(user, userInfoVO);
         return userInfoVO;
+    }
+
+    @Override
+    public void deleteUserInfo(String name) throws BusinessException {
+        User user = this.getUser(name);
+        //逻辑删除标识
+        user.setStatus(User.STATUS_START);
+        user.setLastUpdateTime(new Date());
+        userRepository.save(user);
+    }
+
+    @Override
+    public PageVO getUserPage(String userName, Integer page, Integer number) throws BusinessException {
+        //校验
+        this.getUser(userName);
+        Pageable pageable = PageRequest.of(page, number, Sort.by(Sort.Order.asc("createTime")));
+        Page<User> pageUsers = userRepository.findAll(pageable);
+        List<User> userList = pageUsers.getContent();
+        List<UserInfoVO> userVoList;
+        if (!userList.isEmpty()){
+            userVoList = new ArrayList<>();
+            userList.forEach(user -> {
+                UserInfoVO userInfoVO = new UserInfoVO();
+                modelMapper.map(user, userInfoVO);
+                userVoList.add(userInfoVO);
+            });
+        }
+        return PageVO.newBuilder().pageNo(page).pageSize(number).result(userList).build();
     }
 
     @Override
@@ -77,6 +108,23 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
         List<GrantedAuthority> authorities = new ArrayList<>();
         roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getName())));
         user.setAuthorityList(authorities);
+        return user;
+    }
+
+    /**
+     * 获取用户信息
+     * @param name 用户名称
+     * @return user
+     * @throws BusinessException 业务exception
+     */
+    private User getUser(String name) throws BusinessException {
+        User user = userRepository.findUserByName(name);
+        if (user == null) {
+            throw new BusinessException(BaseExceptionCodes.USER_NOT_EXIST);
+        }
+        if (User.STATUS_START == user.getStatus()){
+            throw new BusinessException(BaseExceptionCodes.USER_NOT_NOMAL);
+        }
         return user;
     }
 }

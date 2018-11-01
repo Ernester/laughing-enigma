@@ -6,16 +6,15 @@
 </head>
 <body>
 <h1>login success</h1>
-<h1> <a th:href="@{/user/center/get(name=${session.SPRING_SECURITY_CONTEXT.authentication.principal.username})}">
-          <span th:text="${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}">
-                                    </span>
-</a></h1>
 <h2>
-
     <div th:if="${session!=null && session.SPRING_SECURITY_CONTEXT!=null}">
-        <a href="/user/center/get">
+        <a th:href="@{/user/center/list(name=${session.SPRING_SECURITY_CONTEXT.authentication.principal.username})}">
+            用户列表
+            <span th:text="${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}">
+                                    </span>
+        </a>
+        <a th:href="@{/user/center/get(name=${session.SPRING_SECURITY_CONTEXT.authentication.principal.username})}">
           <span th:text="${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}">
-                                        用户名
                                     </span>
         </a>
         <span class="welcome">
@@ -37,7 +36,6 @@
 
     });
     $('#users').on('click', function () {
-
         $.ajax({
             url: '/user/date',
             type: 'POST',
